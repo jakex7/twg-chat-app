@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableNativeFeedback,
+  View,
+} from 'react-native';
 import { useQuery, gql } from '@apollo/client';
+import { useNavigation } from '@react-navigation/native';
 import Profile from '../../assets/images/profile.svg';
 import sliceText from '../../helpers/sliceText';
 
 const RoomItem = ({ room }) => {
   const [lastMessage, setLastMessage] = useState([]);
+  const navigation = useNavigation();
   const { loading, data } = useQuery(gql`
     {
       room(id: "${room.id}") {
@@ -22,19 +30,24 @@ const RoomItem = ({ room }) => {
       setLastMessage(sliceText(data.room.messages.slice(-1)[0].body, 35));
     }
   }, [loading, data]);
+  const handleOpen = () => {
+    navigation.navigate('Room', { id: room.id });
+  };
   return (
-    <View style={styles.container}>
-      {room.roomPic ? (
-        <Image source={{ uri: room.roomPic }} style={styles.image} />
-      ) : (
-        <Profile height="64" width="64" style={styles.image} />
-      )}
-      <View>
-        <Text style={styles.title}>{sliceText(room.name, 30)}</Text>
-        <Text style={styles.lastMessage}>{lastMessage}</Text>
+    <TouchableNativeFeedback onPress={handleOpen}>
+      <View style={styles.container}>
+        {room.roomPic ? (
+          <Image source={{ uri: room.roomPic }} style={styles.image} />
+        ) : (
+          <Profile height="64" width="64" style={styles.image} />
+        )}
+        <View>
+          <Text style={styles.title}>{sliceText(room.name, 30)}</Text>
+          <Text style={styles.lastMessage}>{lastMessage}</Text>
+        </View>
+        <Text style={styles.lastMessageTime}>2 h ago</Text>
       </View>
-      <Text style={styles.lastMessageTime}>2 h ago</Text>
-    </View>
+    </TouchableNativeFeedback>
   );
 };
 

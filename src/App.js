@@ -11,6 +11,7 @@ import {
 } from '@apollo/client';
 import { AUTH_TOKEN } from '@env';
 import Rooms from './views/Rooms';
+import Room from './views/Room';
 
 const client = new ApolloClient({
   link: new HttpLink({
@@ -42,6 +43,7 @@ const App = () => {
           }}
         >
           <Stack.Screen name="Rooms" component={Rooms} />
+          <Stack.Screen name="Room" component={Room} />
         </Stack.Navigator>
       </NavigationContainer>
     </ApolloProvider>

@@ -2,9 +2,9 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Header from '../Header/Header';
 
-const ScreenContainer = ({ children, title }) => (
+const ScreenContainer = ({ children, title, roomInfo }) => (
   <View style={styles.container}>
-    <Header title={title} />
+    <Header title={title} roomInfo={roomInfo || null} />
     {children}
   </View>
 );
