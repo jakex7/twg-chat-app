@@ -13,6 +13,7 @@ module.exports = {
     'react/jsx-filename-extension': 'off',
     'react/prop-types': 'off',
     'react/style-prop-object': 'off',
+    'global-require': 'off',
     //   'comma-dangle': 'off',
     //   'padded-blocks': 'off',
     //   'arrow-body-style': 'off',
