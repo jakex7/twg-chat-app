@@ -1,0 +1,12 @@
+{
+  "name": "twg-chat-app",
+  "displayName": "twg-chat-app",
+  "expo": {
+    "name": "twg-chat-app",
+    "slug": "twg-chat-app",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
