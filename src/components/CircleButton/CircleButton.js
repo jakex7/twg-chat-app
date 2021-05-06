@@ -18,14 +18,7 @@ const CircleButton = ({ iconName = '', handlePress = () => {}, ...rest }) => {
     <View {...rest}>
       <View style={styles.container}>
         <TouchableOpacity onPress={handlePress}>
-          <View
-            style={{
-              width: 44,
-              height: 44,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+          <View style={styles.iconContainer}>
             {!iconName && <View style={{ width: 24, height: 24 }} />}
             {iconName === 'profile' && <Profile {...props} />}
             {iconName === 'search' && <Search {...props} />}
@@ -45,6 +38,12 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 44 / 2,
+  },
+  iconContainer: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

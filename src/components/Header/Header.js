@@ -6,52 +6,19 @@ import CircleButton from '../CircleButton/CircleButton';
 
 const Header = ({ title = '', roomInfo, buttons }) => (
   <View style={styles.container}>
-    <View
-      style={{
-        padding: 16,
-        flexDirection: 'row',
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%',
-      }}
-    >
+    <View style={styles.flexContainer}>
       {roomInfo ? (
         <>
           {roomInfo.roomPic ? (
-            <Image
-              source={{ uri: roomInfo.roomPic }}
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 44 / 2,
-                marginRight: 8,
-              }}
-            />
+            <Image source={{ uri: roomInfo.roomPic }} style={styles.image} />
           ) : (
-            <Profile
-              height="44"
-              width="44"
-              style={{
-                borderRadius: 44 / 2,
-                marginRight: 8,
-              }}
-            />
+            <Profile height="44" width="44" style={styles.image} />
           )}
           <View style={{ flex: 1 }}>
-            <Text
-              style={{
-                color: '#5603AD',
-                fontSize: 16,
-                fontFamily: 'Poppins-Bold',
-                // flex: 1,
-                // width: '',
-              }}
-              numberOfLines={1}
-            >
+            <Text style={styles.roomName} numberOfLines={1}>
               {roomInfo.name}
             </Text>
-            <Text style={{ color: '#ffffff' }}>
+            <Text style={styles.lastSeen}>
               {roomInfo.lastSeen ? timeFromNow(roomInfo.lastSeen) : null}
             </Text>
           </View>
@@ -60,7 +27,7 @@ const Header = ({ title = '', roomInfo, buttons }) => (
         <Text style={styles.header}>{title}</Text>
       )}
       {buttons && (
-        <View style={{ flexDirection: 'row' }}>
+        <View style={styles.iconsContainer}>
           {buttons.map((button) => (
             <CircleButton
               key={button.iconName}
@@ -85,11 +52,34 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
   },
+  flexContainer: {
+    padding: 16,
+    flexDirection: 'row',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  image: {
+    width: 44,
+    height: 44,
+    borderRadius: 44 / 2,
+    marginRight: 8,
+  },
+  roomName: {
+    color: '#5603AD',
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+  },
+  lastSeen: {
+    color: '#ffffff',
+  },
   header: {
     color: '#5603AD',
     fontFamily: 'Poppins-Bold',
     fontSize: 36,
   },
+  iconsContainer: { flexDirection: 'row' },
 });
 
 export default Header;
