@@ -25,6 +25,7 @@ const Chat = ({
       isTyping={typingUser.isTyping}
       renderFooter={(e) => <RenderFooter e={e} typingUser={typingUser} />}
       onInputTextChanged={(text) => text.length && handleTypingMessage()}
+      placeholder=""
     />
   );
 };
