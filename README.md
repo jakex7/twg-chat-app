@@ -36,7 +36,10 @@ This application was built with [React Native](https://reactnative.dev/) and [Ex
     ```
 
 1.  **Open the source code and start editing!**
-
+---
+* **Reset cache**<br>
+After editing the `.env` file, it's likely that the changes won't work. In that case, run developer server using `expo r -c` command
+---
 ## 💫 Deploy
 
 To build a production app, follow [this guide](https://docs.expo.io/distribution/introduction/) on expo docs.
