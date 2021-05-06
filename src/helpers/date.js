@@ -1,3 +1,9 @@
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(customParseFormat);
+dayjs.extend(relativeTime);
 export const stringToDate = (str) => {
   let parts = str.split(' ');
   const date = parts[0];
@@ -16,3 +22,5 @@ export const stringToDate = (str) => {
   dt.setSeconds(parseInt(parts[2], 10));
   return dt;
 };
+export const timeFromNow = (dateTimeString) =>
+  dayjs(`${dateTimeString} +0000`, 'YYYY-MM-DD hh:mm:ss ZZ').fromNow();

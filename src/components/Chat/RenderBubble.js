@@ -17,6 +17,7 @@ const RenderBubble = (props) => {
           marginRight: 24,
           marginTop: 12,
           padding: 12,
+          width: '60%',
         },
         left: {
           backgroundColor: '#fff',
@@ -26,6 +27,7 @@ const RenderBubble = (props) => {
           borderTopRightRadius: 12,
           marginTop: 12,
           padding: 12,
+          width: '60%',
         },
       }}
       textStyle={{

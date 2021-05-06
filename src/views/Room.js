@@ -1,39 +1,60 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Bubble, GiftedChat } from 'react-native-gifted-chat';
-import { gql, useQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { GiftedChat } from 'react-native-gifted-chat';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import { stringToDate } from '../helpers/date';
 import ScreenContainer from '../components/ScreenContainer/ScreenContainer';
 import Chat from '../components/Chat/Chat';
+import {
+  GET_ROOM_AND_MESSAGES,
+  MESSAGE_SUBSCRIPTION,
+  SEND_MESSAGE_MUTATION,
+} from '../helpers/api';
 
-const Room = ({ route }) => {
+const Room = ({ route, navigation }) => {
   const [userId, setUserId] = useState('');
   const [roomInfo, setRoomInfo] = useState({});
   const [messages, setMessages] = useState([]);
   const { id: roomId } = route.params;
-  const { loading, data } = useQuery(gql`
-    query {
-      user {
-        id
-      }
-      room(id: "${roomId}") {
-        id
-        name
-        roomPic
-        messages {
-          id
-          body
-          insertedAt
-          user{
-            id
-            profilePic
-          }
-        }
-      }
-    }
-  `);
+  const {
+    loading: loadingQuery,
+    data: dataQuery,
+    refetch: refetchQuery,
+  } = useQuery(GET_ROOM_AND_MESSAGES, { variables: { roomID: roomId } });
+  const {
+    data: dataSubscription,
+    loading: loadingSubscription,
+  } = useSubscription(MESSAGE_SUBSCRIPTION, { variables: { roomID: roomId } });
+  const [sendMessage] = useMutation(SEND_MESSAGE_MUTATION);
+
   useEffect(() => {
-    if (!loading) {
-      const { id, name, roomPic, messages: roomMessages } = data.room;
+    return navigation.addListener('focus', () => {
+      refetchQuery();
+    });
+  }, [navigation]);
+
+  useEffect(() => {
+    if (!loadingSubscription && dataSubscription) {
+      const { id, body, insertedAt, user } = dataSubscription.messageAdded;
+      const newMessage = {
+        _id: id,
+        text: body,
+        createdAt: insertedAt,
+        user: {
+          _id: user.id,
+          avatar: user.profilePic,
+        },
+      };
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, newMessage)
+      );
+    }
+  }, [dataSubscription, loadingSubscription]);
+
+  useEffect(() => {
+    if (!loadingQuery) {
+      //   console.log(dataQuery);
+      // }
+      const { id, name, roomPic, messages: roomMessages } = dataQuery.room;
       const loadedMessages = roomMessages
         .map((item) => ({
           ...item,
@@ -48,17 +69,37 @@ const Room = ({ route }) => {
         .sort(
           (a, b) => stringToDate(b.insertedAt) - stringToDate(a.insertedAt)
         );
-      // console.log(mes);
-      setUserId(data.user.id);
-      setMessages(loadedMessages);
+      setUserId(dataQuery.user.id);
+      setMessages(() => GiftedChat.append([], loadedMessages));
       setRoomInfo({ id, name, roomPic });
-      // setMessages(sliceText(data.room.messages.slice(-1)[0].body, 35));
     }
-  }, [loading, data]);
+  }, [loadingQuery, dataQuery]);
+
+  const handleSendMessage = (message) => {
+    console.log(message);
+    sendMessage({ variables: { roomID: roomId, body: message[0].text } });
+  };
 
   return (
-    <ScreenContainer roomInfo={roomInfo}>
-      <Chat messages={messages} userId={userId} />
+    <ScreenContainer
+      roomInfo={{
+        ...roomInfo,
+        lastSeen: messages.length
+          ? messages
+              .filter((message) => message.user['_id'] !== userId)
+              .slice(0)[0].insertedAt
+          : null,
+      }}
+      buttons={[
+        { iconName: 'phone', handlePress: () => {} },
+        { iconName: 'videocall', handlePress: () => {} },
+      ]}
+    >
+      <Chat
+        messages={messages}
+        userId={userId}
+        handleSendMessage={handleSendMessage}
+      />
     </ScreenContainer>
   );
 };

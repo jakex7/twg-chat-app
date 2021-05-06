@@ -19,7 +19,7 @@ const ALL_ROOMS = gql`
 
 const Rooms = () => {
   const [allRooms, setAllRooms] = useState([]);
-  const { loading, error, data } = useQuery(ALL_ROOMS);
+  const { loading, data } = useQuery(ALL_ROOMS);
 
   useEffect(() => {
     if (!loading) {
@@ -27,12 +27,15 @@ const Rooms = () => {
     }
   }, [loading, data]);
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error :(</Text>;
-
   return (
-    <ScreenContainer title="Rooms">
-      <RoomsList rooms={allRooms} />
+    <ScreenContainer
+      title="Rooms"
+      buttons={[
+        { iconName: 'search', handlePress: () => {} },
+        { iconName: 'rooms', handlePress: () => {} },
+      ]}
+    >
+      {loading ? <Text>Loading...</Text> : <RoomsList rooms={allRooms} />}
     </ScreenContainer>
   );
 };

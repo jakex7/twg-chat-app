@@ -6,30 +6,59 @@ import {
   TouchableNativeFeedback,
   View,
 } from 'react-native';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, gql, useSubscription } from '@apollo/client';
 import { useNavigation } from '@react-navigation/native';
 import Profile from '../../assets/images/profile.svg';
 import sliceText from '../../helpers/sliceText';
+import { GET_ROOM_AND_MESSAGES, MESSAGE_SUBSCRIPTION } from '../../helpers/api';
+import { timeFromNow } from '../../helpers/date';
 
 const RoomItem = ({ room }) => {
-  const [lastMessage, setLastMessage] = useState([]);
+  const [lastMessage, setLastMessage] = useState({
+    body: '',
+    insertedAt: '',
+    fromNow: '',
+  });
   const navigation = useNavigation();
-  const { loading, data } = useQuery(gql`
-    {
-      room(id: "${room.id}") {
-        messages {
-          id
-          body
-          insertedAt
-        }
-      }
-    }
-  `);
+  const {
+    loading: loadingQuery,
+    data: dataQuery,
+  } = useQuery(GET_ROOM_AND_MESSAGES, { variables: { roomID: room.id } });
+  const {
+    data: dataSubscription,
+    loading: loadingSubscription,
+  } = useSubscription(MESSAGE_SUBSCRIPTION, { variables: { roomID: room.id } });
+
   useEffect(() => {
-    if (!loading) {
-      setLastMessage(sliceText(data.room.messages.slice(-1)[0].body, 35));
+    const updateLastMessageTime = () => {
+      setLastMessage((prevState) => ({
+        ...prevState,
+        fromNow: timeFromNow(lastMessage.insertedAt),
+      }));
+    };
+    updateLastMessageTime();
+    const interval = setInterval(updateLastMessageTime, 10 * 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [lastMessage.insertedAt]);
+
+  useEffect(() => {
+    if (!loadingQuery) {
+      setLastMessage({
+        body: sliceText(dataQuery.room.messages.slice(-1)[0].body, 35),
+        insertedAt: dataQuery.room.messages.slice(-1)[0].insertedAt,
+      });
     }
-  }, [loading, data]);
+  }, [loadingQuery, dataQuery]);
+
+  useEffect(() => {
+    if (!loadingSubscription && dataSubscription) {
+      const { body, insertedAt } = dataSubscription.messageAdded;
+      setLastMessage({ body: sliceText(body, 35), insertedAt });
+    }
+  }, [dataSubscription, loadingSubscription]);
+
   const handleOpen = () => {
     navigation.navigate('Room', { id: room.id });
   };
@@ -43,9 +72,9 @@ const RoomItem = ({ room }) => {
         )}
         <View>
           <Text style={styles.title}>{sliceText(room.name, 30)}</Text>
-          <Text style={styles.lastMessage}>{lastMessage}</Text>
+          <Text style={styles.lastMessage}>{lastMessage.body}</Text>
         </View>
-        <Text style={styles.lastMessageTime}>2 h ago</Text>
+        <Text style={styles.lastMessageTime}>{lastMessage.fromNow}</Text>
       </View>
     </TouchableNativeFeedback>
   );
