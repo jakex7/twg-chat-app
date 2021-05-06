@@ -5,35 +5,29 @@ import SendIcon from '../../assets/images/send.svg';
 const RenderInputToolbar = (props) => (
   <InputToolbar
     {...props}
-    accessoryStyle={{
-      height: 68,
-    }}
-    renderComposer={(props) => (
+    renderComposer={({ ...otherProps }) => (
       <Composer
-        {...props}
+        {...otherProps}
         textInputStyle={{
           backgroundColor: '#fff',
           marginRight: 15,
-          padding: 12,
-          // borderRadius: 12,
+          paddingLeft: 12,
+          paddingRight: 12,
           borderBottomLeftRadius: 12,
           borderTopLeftRadius: 12,
           borderTopRightRadius: 12,
           borderBottomRightRadius: 0,
         }}
-        placeholder=""
       />
     )}
-    // renderSend
     containerStyle={{
       backgroundColor: '#B6DEFD',
-      // height: 100,
       padding: 16,
       borderWidth: 0,
     }}
-    renderSend={(props) => (
+    renderSend={({ ...otherProps }) => (
       <Send
-        {...props}
+        {...otherProps}
         alwaysShowSend
         containerStyle={{
           borderWidth: 0,
