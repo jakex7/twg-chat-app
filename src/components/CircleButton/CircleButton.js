@@ -5,6 +5,7 @@ import Search from '../../assets/images/search.svg';
 import Rooms from '../../assets/images/rooms.svg';
 import Phone from '../../assets/images/phone.svg';
 import VideoCall from '../../assets/images/videocall.svg';
+import variables from '../../assets/variables';
 
 const CircleButton = ({ iconName = '', handlePress = () => {}, ...rest }) => {
   const props = {
@@ -34,7 +35,7 @@ const CircleButton = ({ iconName = '', handlePress = () => {}, ...rest }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
+    backgroundColor: variables.colors.white,
     width: 44,
     height: 44,
     borderRadius: 44 / 2,

@@ -1,15 +1,14 @@
 import { Bubble } from 'react-native-gifted-chat';
 import React from 'react';
+import variables from '../../assets/variables';
 
 const RenderBubble = (props) => {
   return (
-    // Step 3: return the component
     <Bubble
       {...props}
       wrapperStyle={{
         right: {
-          // Here is the color change
-          backgroundColor: '#993AFC',
+          backgroundColor: variables.colors.purple.tint,
           borderBottomRightRadius: 0,
           borderTopLeftRadius: 12,
           borderTopRightRadius: 12,
@@ -20,7 +19,7 @@ const RenderBubble = (props) => {
           width: '60%',
         },
         left: {
-          backgroundColor: '#fff',
+          backgroundColor: variables.colors.white,
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 12,
           borderTopLeftRadius: 12,
@@ -32,12 +31,12 @@ const RenderBubble = (props) => {
       }}
       textStyle={{
         right: {
-          fontFamily: 'Poppins-Regular',
+          fontFamily: variables.fonts.regular,
           fontSize: 14,
-          color: '#ffffff',
+          color: variables.colors.white,
         },
         left: {
-          fontFamily: 'Poppins-Regular',
+          fontFamily: variables.fonts.regular,
           fontSize: 14,
         },
       }}

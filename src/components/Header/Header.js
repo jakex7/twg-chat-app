@@ -3,6 +3,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import Profile from '../../assets/images/profile.svg';
 import { timeFromNow } from '../../helpers/date';
 import CircleButton from '../CircleButton/CircleButton';
+import variables from '../../assets/variables';
 
 const Header = ({ title = '', roomInfo, buttons }) => (
   <View style={styles.container}>
@@ -45,7 +46,7 @@ const Header = ({ title = '', roomInfo, buttons }) => (
 const styles = StyleSheet.create({
   container: {
     height: 100,
-    backgroundColor: '#B6DEFD',
+    backgroundColor: variables.colors.blue.tint,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -67,16 +68,16 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   roomName: {
-    color: '#5603AD',
+    color: variables.colors.purple.normal,
     fontSize: 16,
-    fontFamily: 'Poppins-Bold',
+    fontFamily: variables.fonts.bold,
   },
   lastSeen: {
-    color: '#ffffff',
+    color: variables.colors.white,
   },
   header: {
-    color: '#5603AD',
-    fontFamily: 'Poppins-Bold',
+    color: variables.colors.purple.normal,
+    fontFamily: variables.fonts.bold,
     fontSize: 36,
   },
   iconsContainer: { flexDirection: 'row' },

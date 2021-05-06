@@ -1,6 +1,5 @@
 import React from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { Image, Text, View } from 'react-native';
 import RenderBubble from './RenderBubble';
 import RenderInputToolbar from './RenderInputToolbar';
 import RenderFooter from './RenderFooter';

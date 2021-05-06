@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import Profile from '../../assets/images/profile.svg';
 import { timeFromNow } from '../../helpers/date';
 import useMessages from '../../hooks/useMessages';
-import { GiftedChat } from 'react-native-gifted-chat';
+import variables from '../../assets/variables';
 
 const RoomItem = ({ room }) => {
   const [lastMessage, setLastMessage] = useState({
@@ -96,7 +96,7 @@ const RoomItem = ({ room }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
+    backgroundColor: variables.colors.white,
     marginTop: 6,
     marginBottom: 6,
     paddingTop: 12,
@@ -115,22 +115,22 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   title: {
-    fontFamily: 'Poppins-Medium',
+    fontFamily: variables.fonts.medium,
     fontSize: 15,
     lineHeight: 20,
     width: '80%',
   },
   lastMessage: {
-    fontFamily: 'Poppins-Regular',
+    fontFamily: variables.fonts.regular,
     fontSize: 14,
   },
   lastMessageTime: {
     position: 'absolute',
     top: 8,
     right: 12,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: variables.fonts.regular,
     fontSize: 10,
-    color: '#9FA2B2',
+    color: variables.colors.grey.normal,
   },
 });
 

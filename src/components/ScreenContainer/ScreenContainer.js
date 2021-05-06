@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Header from '../Header/Header';
+import variables from '../../assets/variables';
 
 const ScreenContainer = ({ children, title, roomInfo, buttons }) => (
   <View style={styles.container}>
@@ -16,7 +17,7 @@ const ScreenContainer = ({ children, title, roomInfo, buttons }) => (
 const styles = StyleSheet.create({
   container: {
     height: '100%',
-    backgroundColor: '#F0F8FF',
+    backgroundColor: variables.colors.blue.tint2,
   },
 });
 export default ScreenContainer;

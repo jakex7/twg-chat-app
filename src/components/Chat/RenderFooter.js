@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
+import variables from '../../assets/variables';
 
 const RenderFooter = ({ e, typingUser }) => {
   return e.isTyping ? (
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
   image: { width: 24, height: 24, borderRadius: 24 / 2 },
   dotsContainer: {
     marginLeft: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: variables.colors.white,
     width: 68,
     height: 32,
     borderTopLeftRadius: 12,
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
   dot: {
     width: 8,
     height: 8,
-    backgroundColor: '#B6DEFD',
+    backgroundColor: variables.colors.blue.tint,
     borderRadius: 8 / 2,
     margin: 4,
   },
