@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import Profile from '../../assets/images/profile.svg';
 import { timeFromNow } from '../../helpers/date';
 import useMessages from '../../hooks/useMessages';
+import { GiftedChat } from 'react-native-gifted-chat';
 
 const RoomItem = ({ room }) => {
   const [lastMessage, setLastMessage] = useState({
@@ -18,7 +19,12 @@ const RoomItem = ({ room }) => {
     fromNow: '',
   });
   const navigation = useNavigation();
-  const { allMessages, reloadMessages } = useMessages(room.id);
+  const {
+    allMessages,
+    reloadMessages,
+    newMessage,
+    newMessageLoaded,
+  } = useMessages(room.id);
 
   // Reload last message when focused
   useEffect(() => {
@@ -37,6 +43,30 @@ const RoomItem = ({ room }) => {
       });
     }
   }, [allMessages]);
+  // Update last message if new message received
+  useEffect(() => {
+    if (newMessageLoaded && Object.keys(newMessage).length !== 0) {
+      setLastMessage({
+        body: newMessage.text,
+        insertedAt: newMessage.createdAt,
+        fromNow: timeFromNow(newMessage.createdAt),
+      });
+    }
+  }, [newMessageLoaded, newMessage]);
+  // Update time from now in last message every 10 seconds
+  useEffect(() => {
+    const updateLastMessageTime = () => {
+      setLastMessage((prevState) => ({
+        ...prevState,
+        fromNow: timeFromNow(prevState.insertedAt),
+      }));
+    };
+    updateLastMessageTime();
+    const interval = setInterval(updateLastMessageTime, 10 * 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [lastMessage.insertedAt]);
 
   // Open room with id param
   const handleOpen = () => {
