@@ -7,6 +7,7 @@ export default {
     purple: {
       normal: '#5603AD',
       tint: '#993AFC',
+      shade: '#390273',
     },
     blue: {
       normal: '#259DFA',
@@ -15,6 +16,8 @@ export default {
     },
     grey: {
       normal: '#9FA2B2',
+      tint: '#BFC1CC',
+      tint2: '#E9EAEE',
     },
   },
   fonts: {
