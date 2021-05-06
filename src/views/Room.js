@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { useMutation, useQuery, useSubscription } from '@apollo/client';
-import { stringToDate } from '../helpers/date';
 import ScreenContainer from '../components/ScreenContainer/ScreenContainer';
 import Chat from '../components/Chat/Chat';
-import {
-  GET_ROOM_AND_MESSAGES,
-  MESSAGE_ADDED_SUBSCRIPTION,
-  SEND_MESSAGE_MUTATION,
-} from '../helpers/api';
 import useMessages from '../hooks/useMessages';
 import useRoom from '../hooks/useRoom';
 import useSelf from '../hooks/useSelf';

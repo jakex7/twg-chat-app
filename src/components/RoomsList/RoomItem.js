@@ -80,7 +80,7 @@ const RoomItem = ({ room }) => {
         ) : (
           <Profile height="64" width="64" style={styles.image} />
         )}
-        <View style={{ flex: 1 }}>
+        <View style={styles.fill}>
           <Text style={styles.title} numberOfLines={1}>
             {room.name}
           </Text>
@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: variables.colors.grey.normal,
   },
+  fill: { flex: 1 },
 });
 
 export default RoomItem;
