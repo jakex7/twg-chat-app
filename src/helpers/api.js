@@ -1,14 +1,29 @@
 import { gql } from '@apollo/client';
 
-export const GET_ROOM_AND_MESSAGES = gql`
-  query GetRoomInfoAndMessages($roomID: String!) {
+export const GET_SELF_INFO = gql`
+  query GetSelfInfo {
     user {
       id
+      email
+      firstName
+      lastName
+      profilePic
+      role
     }
+  }
+`;
+export const GET_ROOM_INFO = gql`
+  query GetRoomInfo($roomID: ID!) {
     room(id: $roomID) {
       id
       name
       roomPic
+    }
+  }
+`;
+export const GET_MESSAGES = gql`
+  query GetMessages($roomID: ID!) {
+    room(id: $roomID) {
       messages {
         id
         body

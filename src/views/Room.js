@@ -9,76 +9,50 @@ import {
   MESSAGE_SUBSCRIPTION,
   SEND_MESSAGE_MUTATION,
 } from '../helpers/api';
+import useMessages from '../hooks/useMessages';
+import useRoom from '../hooks/useRoom';
+import useSelf from '../hooks/useSelf';
 
 const Room = ({ route, navigation }) => {
-  const [userId, setUserId] = useState('');
   const [roomInfo, setRoomInfo] = useState({});
   const [messages, setMessages] = useState([]);
   const { id: roomId } = route.params;
-  const {
-    loading: loadingQuery,
-    data: dataQuery,
-    refetch: refetchQuery,
-  } = useQuery(GET_ROOM_AND_MESSAGES, { variables: { roomID: roomId } });
-  const {
-    data: dataSubscription,
-    loading: loadingSubscription,
-  } = useSubscription(MESSAGE_SUBSCRIPTION, { variables: { roomID: roomId } });
-  const [sendMessage] = useMutation(SEND_MESSAGE_MUTATION);
 
+  const { id: userId } = useSelf();
+  const { room } = useRoom(roomId);
+  const {
+    allMessages,
+    reloadMessages,
+    newMessage,
+    newMessageLoaded,
+    handleSendMessage,
+  } = useMessages(roomId);
+
+  // Reload messages when focus
   useEffect(() => {
     return navigation.addListener('focus', () => {
-      refetchQuery();
+      reloadMessages();
     });
   }, [navigation]);
 
+  // Load room info
   useEffect(() => {
-    if (!loadingSubscription && dataSubscription) {
-      const { id, body, insertedAt, user } = dataSubscription.messageAdded;
-      const newMessage = {
-        _id: id,
-        text: body,
-        createdAt: insertedAt,
-        user: {
-          _id: user.id,
-          avatar: user.profilePic,
-        },
-      };
+    setRoomInfo(room);
+  }, [room]);
+
+  // Load all messages to GiftedChat
+  useEffect(() => {
+    setMessages(() => GiftedChat.append([], allMessages));
+  }, [allMessages]);
+
+  // Add new message to GiftedChat
+  useEffect(() => {
+    if (newMessageLoaded && Object.keys(newMessage).length !== 0) {
       setMessages((previousMessages) =>
         GiftedChat.append(previousMessages, newMessage)
       );
     }
-  }, [dataSubscription, loadingSubscription]);
-
-  useEffect(() => {
-    if (!loadingQuery) {
-      //   console.log(dataQuery);
-      // }
-      const { id, name, roomPic, messages: roomMessages } = dataQuery.room;
-      const loadedMessages = roomMessages
-        .map((item) => ({
-          ...item,
-          _id: item.id,
-          text: item.body,
-          createdAt: item.insertedAt,
-          user: {
-            _id: item.user.id,
-            avatar: item.user.profilePic,
-          },
-        }))
-        .sort(
-          (a, b) => stringToDate(b.insertedAt) - stringToDate(a.insertedAt)
-        );
-      setUserId(dataQuery.user.id);
-      setMessages(() => GiftedChat.append([], loadedMessages));
-      setRoomInfo({ id, name, roomPic });
-    }
-  }, [loadingQuery, dataQuery]);
-
-  const handleSendMessage = (message) => {
-    console.log(message);
-    sendMessage({ variables: { roomID: roomId, body: message[0].text } });
-  };
+  }, [newMessageLoaded, newMessage]);
 
   return (
     <ScreenContainer
@@ -98,7 +72,7 @@ const Room = ({ route, navigation }) => {
       <Chat
         messages={messages}
         userId={userId}
-        handleSendMessage={handleSendMessage}
+        handleSendMessage={(message) => handleSendMessage(message[0].text)}
       />
     </ScreenContainer>
   );

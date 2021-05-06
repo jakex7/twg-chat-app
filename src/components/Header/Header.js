@@ -52,7 +52,7 @@ const Header = ({ title = '', roomInfo, buttons }) => (
               {roomInfo.name}
             </Text>
             <Text style={{ color: '#ffffff' }}>
-              {roomInfo.lastSeen ? timeFromNow(roomInfo.lastSeen) : 'Never'}
+              {roomInfo.lastSeen ? timeFromNow(roomInfo.lastSeen) : null}
             </Text>
           </View>
         </>

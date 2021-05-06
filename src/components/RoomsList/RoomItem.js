@@ -6,12 +6,10 @@ import {
   TouchableNativeFeedback,
   View,
 } from 'react-native';
-import { useQuery, gql, useSubscription } from '@apollo/client';
 import { useNavigation } from '@react-navigation/native';
 import Profile from '../../assets/images/profile.svg';
-import sliceText from '../../helpers/sliceText';
-import { GET_ROOM_AND_MESSAGES, MESSAGE_SUBSCRIPTION } from '../../helpers/api';
 import { timeFromNow } from '../../helpers/date';
+import useMessages from '../../hooks/useMessages';
 
 const RoomItem = ({ room }) => {
   const [lastMessage, setLastMessage] = useState({
@@ -20,45 +18,27 @@ const RoomItem = ({ room }) => {
     fromNow: '',
   });
   const navigation = useNavigation();
-  const {
-    loading: loadingQuery,
-    data: dataQuery,
-  } = useQuery(GET_ROOM_AND_MESSAGES, { variables: { roomID: room.id } });
-  const {
-    data: dataSubscription,
-    loading: loadingSubscription,
-  } = useSubscription(MESSAGE_SUBSCRIPTION, { variables: { roomID: room.id } });
+  const { allMessages, reloadMessages } = useMessages(room.id);
 
+  // Reload last message when focused
   useEffect(() => {
-    const updateLastMessageTime = () => {
-      setLastMessage((prevState) => ({
-        ...prevState,
-        fromNow: timeFromNow(lastMessage.insertedAt),
-      }));
-    };
-    updateLastMessageTime();
-    const interval = setInterval(updateLastMessageTime, 10 * 1000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [lastMessage.insertedAt]);
+    return navigation.addListener('focus', () => {
+      reloadMessages();
+    });
+  }, [navigation]);
 
+  // Load last message
   useEffect(() => {
-    if (!loadingQuery) {
+    if (allMessages.length) {
       setLastMessage({
-        body: sliceText(dataQuery.room.messages.slice(-1)[0].body, 35),
-        insertedAt: dataQuery.room.messages.slice(-1)[0].insertedAt,
+        body: allMessages[0].body,
+        insertedAt: allMessages[0].insertedAt,
+        fromNow: timeFromNow(allMessages[0].insertedAt),
       });
     }
-  }, [loadingQuery, dataQuery]);
+  }, [allMessages]);
 
-  useEffect(() => {
-    if (!loadingSubscription && dataSubscription) {
-      const { body, insertedAt } = dataSubscription.messageAdded;
-      setLastMessage({ body: sliceText(body, 35), insertedAt });
-    }
-  }, [dataSubscription, loadingSubscription]);
-
+  // Open room with id param
   const handleOpen = () => {
     navigation.navigate('Room', { id: room.id });
   };
@@ -70,9 +50,13 @@ const RoomItem = ({ room }) => {
         ) : (
           <Profile height="64" width="64" style={styles.image} />
         )}
-        <View>
-          <Text style={styles.title}>{sliceText(room.name, 30)}</Text>
-          <Text style={styles.lastMessage}>{lastMessage.body}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title} numberOfLines={1}>
+            {room.name}
+          </Text>
+          <Text style={styles.lastMessage} numberOfLines={1}>
+            {lastMessage.body}
+          </Text>
         </View>
         <Text style={styles.lastMessageTime}>{lastMessage.fromNow}</Text>
       </View>
@@ -104,6 +88,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     fontSize: 15,
     lineHeight: 20,
+    width: '80%',
   },
   lastMessage: {
     fontFamily: 'Poppins-Regular',
