@@ -6,7 +6,7 @@ import ScreenContainer from '../components/ScreenContainer/ScreenContainer';
 import Chat from '../components/Chat/Chat';
 import {
   GET_ROOM_AND_MESSAGES,
-  MESSAGE_SUBSCRIPTION,
+  MESSAGE_ADDED_SUBSCRIPTION,
   SEND_MESSAGE_MUTATION,
 } from '../helpers/api';
 import useMessages from '../hooks/useMessages';
@@ -28,6 +28,8 @@ const Room = ({ route, navigation }) => {
     newMessage,
     newMessageLoaded,
     handleSendMessage,
+    handleTypingMessage,
+    typingUser,
   } = useMessages(roomId);
 
   // Reload messages when focus
@@ -75,6 +77,8 @@ const Room = ({ route, navigation }) => {
         messages={messages}
         userId={userId}
         handleSendMessage={(message) => handleSendMessage(message[0].text)}
+        handleTypingMessage={() => handleTypingMessage()}
+        typingUser={() => (typingUser.id !== userId ? typingUser : false)}
       />
     </ScreenContainer>
   );
