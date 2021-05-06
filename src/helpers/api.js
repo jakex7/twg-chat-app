@@ -48,7 +48,7 @@ export const GET_MESSAGES = gql`
     }
   }
 `;
-export const MESSAGE_SUBSCRIPTION = gql`
+export const MESSAGE_ADDED_SUBSCRIPTION = gql`
   subscription OnMessageSent($roomID: String!) {
     messageAdded(roomId: $roomID) {
       id
@@ -61,9 +61,25 @@ export const MESSAGE_SUBSCRIPTION = gql`
     }
   }
 `;
+export const MESSAGE_TYPING_SUBSCRIPTION = gql`
+  subscription OnMessageTyping($roomID: String!) {
+    typingUser(roomId: $roomID) {
+      id
+      firstName
+      profilePic
+    }
+  }
+`;
 export const SEND_MESSAGE_MUTATION = gql`
   mutation SendMessage($roomID: String!, $body: String!) {
     sendMessage(roomId: $roomID, body: $body) {
+      id
+    }
+  }
+`;
+export const TYPING_MESSAGE_MUTATION = gql`
+  mutation TypingMessage($roomID: String!) {
+    typingUser(roomId: $roomID) {
       id
     }
   }

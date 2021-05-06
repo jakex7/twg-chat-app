@@ -2,24 +2,37 @@ import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import {
   GET_MESSAGES,
-  MESSAGE_SUBSCRIPTION,
+  MESSAGE_ADDED_SUBSCRIPTION,
+  MESSAGE_TYPING_SUBSCRIPTION,
   SEND_MESSAGE_MUTATION,
+  TYPING_MESSAGE_MUTATION,
 } from '../helpers/api';
 import { stringToDate } from '../helpers/date';
 
 const useMessages = (roomID) => {
   const [allMessages, setAllMessages] = useState([]);
   const [newMessage, setNewMessage] = useState({});
+  const [typingUser, setTypingUser] = useState({
+    isTyping: false,
+    id: '',
+    firstName: '',
+    profilePic: '',
+  });
   const {
     loading: loadingQuery,
     data: dataQuery,
     refetch: refetchQuery,
   } = useQuery(GET_MESSAGES, { variables: { roomID } });
   const {
-    data: dataSubscription,
-    loading: loadingSubscription,
-  } = useSubscription(MESSAGE_SUBSCRIPTION, { variables: { roomID } });
-  const [sendMessage] = useMutation(SEND_MESSAGE_MUTATION);
+    data: dataAddSubscription,
+    loading: loadingAddSubscription,
+  } = useSubscription(MESSAGE_ADDED_SUBSCRIPTION, { variables: { roomID } });
+  const {
+    data: dataTypingSubscription,
+    loading: loadingTypingSubscription,
+  } = useSubscription(MESSAGE_TYPING_SUBSCRIPTION, { variables: { roomID } });
+  const [sendMessageMutation] = useMutation(SEND_MESSAGE_MUTATION);
+  const [typingMessageMutation] = useMutation(TYPING_MESSAGE_MUTATION);
 
   useEffect(() => {
     if (!loadingQuery) {
@@ -43,8 +56,8 @@ const useMessages = (roomID) => {
   }, [loadingQuery, dataQuery]);
 
   useEffect(() => {
-    if (!loadingSubscription && dataSubscription) {
-      const { id, body, insertedAt, user } = dataSubscription.messageAdded;
+    if (!loadingAddSubscription && dataAddSubscription) {
+      const { id, body, insertedAt, user } = dataAddSubscription.messageAdded;
       const message = {
         _id: id,
         text: body,
@@ -56,18 +69,38 @@ const useMessages = (roomID) => {
       };
       setNewMessage(message);
     }
-  }, [loadingSubscription, dataSubscription]);
+  }, [loadingAddSubscription, dataAddSubscription]);
+  useEffect(() => {
+    if (!loadingTypingSubscription && dataTypingSubscription) {
+      setTypingUser({
+        isTyping: true,
+        ...dataTypingSubscription.typingUser,
+      });
+      const timeout = setTimeout(
+        () => setTypingUser((prevState) => ({ ...prevState, isTyping: false })),
+        5000
+      );
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [loadingTypingSubscription, dataTypingSubscription]);
 
   const handleSendMessage = (text) => {
-    sendMessage({ variables: { roomID, body: text } });
+    sendMessageMutation({ variables: { roomID, body: text } });
+  };
+  const handleTypingMessage = () => {
+    typingMessageMutation({ variables: { roomID } });
   };
 
   return {
     allMessages,
     reloadMessages: refetchQuery,
     newMessage,
-    newMessageLoaded: !loadingSubscription,
+    newMessageLoaded: !loadingAddSubscription,
     handleSendMessage,
+    handleTypingMessage,
+    typingUser,
   };
 };
 
