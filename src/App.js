@@ -1,75 +1,12 @@
 import React from 'react';
+import { ApolloProvider } from '@apollo/client';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from '@expo-google-fonts/inter';
 import AppLoadingPlaceholder from 'expo/build/launch/AppLoadingPlaceholder';
-import {
-  ApolloClient,
-  ApolloProvider,
-  HttpLink,
-  InMemoryCache,
-  split,
-} from '@apollo/client';
-import { getMainDefinition } from '@apollo/client/utilities';
-import * as AbsintheSocket from '@absinthe/socket';
-import { createAbsintheSocketLink } from '@absinthe/socket-apollo-link';
-import { Socket as PhoenixSocket } from 'phoenix';
-import { AUTH_TOKEN } from '@env';
+import { client } from './helpers/apiClient';
 import Rooms from './views/Rooms';
 import Room from './views/Room';
-import { setContext } from '@apollo/client/link/context';
-import { hasSubscription } from '@jumpn/utils-graphql';
-
-const phoenixSocket = new PhoenixSocket(
-  'wss://chat.thewidlarzgroup.com/socket',
-  {
-    params: () => ({ token: `${AUTH_TOKEN}` }),
-  }
-);
-const absintheSocket = AbsintheSocket.create(phoenixSocket);
-const wsLink = createAbsintheSocketLink(absintheSocket);
-
-const httpLink = new HttpLink({
-  uri: 'https://chat.thewidlarzgroup.com/api/graphiql',
-});
-
-const authLink = setContext((_, { headers }) => {
-  // Get the authentication token from the cookie if it exists.
-  const token = AUTH_TOKEN;
-
-  // Add the new Authorization header.
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    },
-  };
-});
-
-// Chain the HTTP link and the authorization link.
-const authedHttpLink = authLink.concat(httpLink);
-
-// const splitLink = split(
-//   ({ query }) => {
-//     const definition = getMainDefinition(query);
-//     return (
-//       definition.kind === 'OperationDefinition' &&
-//       definition.operation === 'subscription'
-//     );
-//   },
-//   wsLink,
-//   authedHttpLink
-// );
-
-const client = new ApolloClient({
-  link: split(
-    (operation) => hasSubscription(operation.query),
-    wsLink,
-    authedHttpLink
-  ),
-  // link: splitLink,
-  cache: new InMemoryCache(),
-});
 
 const Stack = createStackNavigator();
 
