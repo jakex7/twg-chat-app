@@ -1,31 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
-import { gql } from '@apollo/client/core';
-import { useQuery } from '@apollo/client';
+import React from 'react';
 import ScreenContainer from '../components/ScreenContainer/ScreenContainer';
 import RoomsList from '../components/RoomsList/RoomsList';
-
-const ALL_ROOMS = gql`
-  query GetRoomsName {
-    usersRooms {
-      rooms {
-        id
-        name
-        roomPic
-      }
-    }
-  }
-`;
+import useSelf from '../hooks/useSelf';
 
 const Rooms = () => {
-  const [allRooms, setAllRooms] = useState([]);
-  const { loading, data } = useQuery(ALL_ROOMS);
-
-  useEffect(() => {
-    if (!loading) {
-      setAllRooms(data.usersRooms.rooms);
-    }
-  }, [loading, data]);
+  const { rooms } = useSelf();
 
   return (
     <ScreenContainer
@@ -35,13 +14,9 @@ const Rooms = () => {
         { iconName: 'rooms', handlePress: () => {} },
       ]}
     >
-      {loading ? <Text>Loading...</Text> : <RoomsList rooms={allRooms} />}
+      <RoomsList rooms={rooms} />
     </ScreenContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {},
-});
 
 export default Rooms;

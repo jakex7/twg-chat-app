@@ -18,7 +18,9 @@ const Room = ({ route, navigation }) => {
   const [messages, setMessages] = useState([]);
   const { id: roomId } = route.params;
 
-  const { id: userId } = useSelf();
+  const {
+    selfInfo: { id: userId },
+  } = useSelf();
   const { room } = useRoom(roomId);
   const {
     allMessages,

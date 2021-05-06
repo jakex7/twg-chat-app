@@ -12,6 +12,17 @@ export const GET_SELF_INFO = gql`
     }
   }
 `;
+export const GET_SELF_ROOMS = gql`
+  query GetSelfRooms {
+    usersRooms {
+      rooms {
+        id
+        name
+        roomPic
+      }
+    }
+  }
+`;
 export const GET_ROOM_INFO = gql`
   query GetRoomInfo($roomID: ID!) {
     room(id: $roomID) {
@@ -24,6 +35,7 @@ export const GET_ROOM_INFO = gql`
 export const GET_MESSAGES = gql`
   query GetMessages($roomID: ID!) {
     room(id: $roomID) {
+      id
       messages {
         id
         body

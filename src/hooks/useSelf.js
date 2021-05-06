@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_SELF_INFO } from '../helpers/api';
+import { GET_SELF_INFO, GET_SELF_ROOMS } from '../helpers/api';
 
 const useSelf = () => {
   const [selfInfo, setSelfInfo] = useState({
@@ -11,15 +11,29 @@ const useSelf = () => {
     profilePic: '',
     role: '',
   });
-  const { loading: loadingQuery, data: dataQuery } = useQuery(GET_SELF_INFO);
+  const [rooms, setRooms] = useState([]);
+  const { loading: loadingQueryInfo, data: dataQueryInfo } = useQuery(
+    GET_SELF_INFO
+  );
+  const { loading: loadingQueryRooms, data: dataQueryRooms } = useQuery(
+    GET_SELF_ROOMS
+  );
 
   useEffect(() => {
-    if (!loadingQuery) {
-      const { user } = dataQuery;
+    if (!loadingQueryInfo) {
+      const { user } = dataQueryInfo;
       setSelfInfo(user);
     }
-  }, [loadingQuery, dataQuery]);
-  return selfInfo;
+  }, [loadingQueryInfo, dataQueryInfo]);
+
+  useEffect(() => {
+    if (!loadingQueryRooms) {
+      const { rooms: userRooms } = dataQueryRooms.usersRooms;
+      setRooms(userRooms);
+    }
+  }, [loadingQueryRooms, dataQueryRooms]);
+
+  return { selfInfo, rooms };
 };
 
 export default useSelf;
