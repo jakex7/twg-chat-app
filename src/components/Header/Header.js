@@ -1,20 +1,23 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Profile from '../../assets/images/profile.svg';
+import { timeFromNow } from '../../helpers/date';
+import CircleButton from '../CircleButton/CircleButton';
 
-const Header = ({ title = '', roomInfo }) => (
+const Header = ({ title = '', roomInfo, buttons }) => (
   <View style={styles.container}>
     <View
       style={{
         padding: 16,
         flexDirection: 'row',
         height: '100%',
-        alignItems: 'flex-end',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
       }}
     >
       {roomInfo ? (
         <>
-          {/*<Image source={{ uri: roomInfo.roomPic }} />*/}
           {roomInfo.roomPic ? (
             <Image
               source={{ uri: roomInfo.roomPic }}
@@ -35,21 +38,38 @@ const Header = ({ title = '', roomInfo }) => (
               }}
             />
           )}
-          <View>
+          <View style={{ flex: 1 }}>
             <Text
               style={{
                 color: '#5603AD',
                 fontSize: 16,
                 fontFamily: 'Poppins-Bold',
+                // flex: 1,
+                // width: '',
               }}
+              numberOfLines={1}
             >
               {roomInfo.name}
             </Text>
-            <Text style={{ color: '#ffffff' }}>Active now</Text>
+            <Text style={{ color: '#ffffff' }}>
+              {roomInfo.lastSeen ? timeFromNow(roomInfo.lastSeen) : null}
+            </Text>
           </View>
         </>
       ) : (
         <Text style={styles.header}>{title}</Text>
+      )}
+      {buttons && (
+        <View style={{ flexDirection: 'row' }}>
+          {buttons.map((button) => (
+            <CircleButton
+              key={button.iconName}
+              iconName={button.iconName}
+              handlePress={button.handlePress}
+              style={{ marginLeft: 12 }}
+            />
+          ))}
+        </View>
       )}
     </View>
   </View>
@@ -69,7 +89,6 @@ const styles = StyleSheet.create({
     color: '#5603AD',
     fontFamily: 'Poppins-Bold',
     fontSize: 36,
-    // padding: 16,
   },
 });
 

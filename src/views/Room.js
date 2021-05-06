@@ -1,64 +1,81 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Bubble, GiftedChat } from 'react-native-gifted-chat';
-import { gql, useQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { GiftedChat } from 'react-native-gifted-chat';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import { stringToDate } from '../helpers/date';
 import ScreenContainer from '../components/ScreenContainer/ScreenContainer';
 import Chat from '../components/Chat/Chat';
+import {
+  GET_ROOM_AND_MESSAGES,
+  MESSAGE_SUBSCRIPTION,
+  SEND_MESSAGE_MUTATION,
+} from '../helpers/api';
+import useMessages from '../hooks/useMessages';
+import useRoom from '../hooks/useRoom';
+import useSelf from '../hooks/useSelf';
 
-const Room = ({ route }) => {
-  const [userId, setUserId] = useState('');
+const Room = ({ route, navigation }) => {
   const [roomInfo, setRoomInfo] = useState({});
   const [messages, setMessages] = useState([]);
   const { id: roomId } = route.params;
-  const { loading, data } = useQuery(gql`
-    query {
-      user {
-        id
-      }
-      room(id: "${roomId}") {
-        id
-        name
-        roomPic
-        messages {
-          id
-          body
-          insertedAt
-          user{
-            id
-            profilePic
-          }
-        }
-      }
-    }
-  `);
+
+  const {
+    selfInfo: { id: userId },
+  } = useSelf();
+  const { room } = useRoom(roomId);
+  const {
+    allMessages,
+    reloadMessages,
+    newMessage,
+    newMessageLoaded,
+    handleSendMessage,
+  } = useMessages(roomId);
+
+  // Reload messages when focus
   useEffect(() => {
-    if (!loading) {
-      const { id, name, roomPic, messages: roomMessages } = data.room;
-      const loadedMessages = roomMessages
-        .map((item) => ({
-          ...item,
-          _id: item.id,
-          text: item.body,
-          createdAt: item.insertedAt,
-          user: {
-            _id: item.user.id,
-            avatar: item.user.profilePic,
-          },
-        }))
-        .sort(
-          (a, b) => stringToDate(b.insertedAt) - stringToDate(a.insertedAt)
-        );
-      // console.log(mes);
-      setUserId(data.user.id);
-      setMessages(loadedMessages);
-      setRoomInfo({ id, name, roomPic });
-      // setMessages(sliceText(data.room.messages.slice(-1)[0].body, 35));
+    return navigation.addListener('focus', () => {
+      reloadMessages();
+    });
+  }, [navigation]);
+
+  // Load room info
+  useEffect(() => {
+    setRoomInfo(room);
+  }, [room]);
+
+  // Load all messages to GiftedChat
+  useEffect(() => {
+    setMessages(() => GiftedChat.append([], allMessages));
+  }, [allMessages]);
+
+  // Add new message to GiftedChat
+  useEffect(() => {
+    if (newMessageLoaded && Object.keys(newMessage).length !== 0) {
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, newMessage)
+      );
     }
-  }, [loading, data]);
+  }, [newMessageLoaded, newMessage]);
 
   return (
-    <ScreenContainer roomInfo={roomInfo}>
-      <Chat messages={messages} userId={userId} />
+    <ScreenContainer
+      roomInfo={{
+        ...roomInfo,
+        lastSeen: messages.length
+          ? messages
+              .filter((message) => message.user['_id'] !== userId)
+              .slice(0)[0].insertedAt
+          : null,
+      }}
+      buttons={[
+        { iconName: 'phone', handlePress: () => {} },
+        { iconName: 'videocall', handlePress: () => {} },
+      ]}
+    >
+      <Chat
+        messages={messages}
+        userId={userId}
+        handleSendMessage={(message) => handleSendMessage(message[0].text)}
+      />
     </ScreenContainer>
   );
 };

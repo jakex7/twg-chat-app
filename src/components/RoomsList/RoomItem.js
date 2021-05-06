@@ -6,30 +6,69 @@ import {
   TouchableNativeFeedback,
   View,
 } from 'react-native';
-import { useQuery, gql } from '@apollo/client';
 import { useNavigation } from '@react-navigation/native';
 import Profile from '../../assets/images/profile.svg';
-import sliceText from '../../helpers/sliceText';
+import { timeFromNow } from '../../helpers/date';
+import useMessages from '../../hooks/useMessages';
+import { GiftedChat } from 'react-native-gifted-chat';
 
 const RoomItem = ({ room }) => {
-  const [lastMessage, setLastMessage] = useState([]);
+  const [lastMessage, setLastMessage] = useState({
+    body: '',
+    insertedAt: '',
+    fromNow: '',
+  });
   const navigation = useNavigation();
-  const { loading, data } = useQuery(gql`
-    {
-      room(id: "${room.id}") {
-        messages {
-          id
-          body
-          insertedAt
-        }
-      }
-    }
-  `);
+  const {
+    allMessages,
+    reloadMessages,
+    newMessage,
+    newMessageLoaded,
+  } = useMessages(room.id);
+
+  // Reload last message when focused
   useEffect(() => {
-    if (!loading) {
-      setLastMessage(sliceText(data.room.messages.slice(-1)[0].body, 35));
+    return navigation.addListener('focus', () => {
+      reloadMessages();
+    });
+  }, [navigation]);
+
+  // Load last message
+  useEffect(() => {
+    if (allMessages.length) {
+      setLastMessage({
+        body: allMessages[0].body,
+        insertedAt: allMessages[0].insertedAt,
+        fromNow: timeFromNow(allMessages[0].insertedAt),
+      });
     }
-  }, [loading, data]);
+  }, [allMessages]);
+  // Update last message if new message received
+  useEffect(() => {
+    if (newMessageLoaded && Object.keys(newMessage).length !== 0) {
+      setLastMessage({
+        body: newMessage.text,
+        insertedAt: newMessage.createdAt,
+        fromNow: timeFromNow(newMessage.createdAt),
+      });
+    }
+  }, [newMessageLoaded, newMessage]);
+  // Update time from now in last message every 10 seconds
+  useEffect(() => {
+    const updateLastMessageTime = () => {
+      setLastMessage((prevState) => ({
+        ...prevState,
+        fromNow: timeFromNow(prevState.insertedAt),
+      }));
+    };
+    updateLastMessageTime();
+    const interval = setInterval(updateLastMessageTime, 10 * 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [lastMessage.insertedAt]);
+
+  // Open room with id param
   const handleOpen = () => {
     navigation.navigate('Room', { id: room.id });
   };
@@ -41,11 +80,15 @@ const RoomItem = ({ room }) => {
         ) : (
           <Profile height="64" width="64" style={styles.image} />
         )}
-        <View>
-          <Text style={styles.title}>{sliceText(room.name, 30)}</Text>
-          <Text style={styles.lastMessage}>{lastMessage}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title} numberOfLines={1}>
+            {room.name}
+          </Text>
+          <Text style={styles.lastMessage} numberOfLines={1}>
+            {lastMessage.body}
+          </Text>
         </View>
-        <Text style={styles.lastMessageTime}>2 h ago</Text>
+        <Text style={styles.lastMessageTime}>{lastMessage.fromNow}</Text>
       </View>
     </TouchableNativeFeedback>
   );
@@ -75,6 +118,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     fontSize: 15,
     lineHeight: 20,
+    width: '80%',
   },
   lastMessage: {
     fontFamily: 'Poppins-Regular',
