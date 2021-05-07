@@ -1,5 +1,5 @@
-import { stringToDate, timeFromNow } from './date';
 import dayjs from 'dayjs';
+import { stringToDate, timeFromNow } from './date';
 
 describe('Date helper', () => {
   it('converts string to date', () => {

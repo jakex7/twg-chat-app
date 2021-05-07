@@ -5,11 +5,13 @@ import variables from '../../assets/variables';
 
 const ScreenContainer = ({ children, title, roomInfo, buttons }) => (
   <View style={styles.container}>
-    <Header
-      title={title}
-      roomInfo={roomInfo || null}
-      buttons={buttons || null}
-    />
+    {(!!title || !!roomInfo) && (
+      <Header
+        title={title}
+        roomInfo={roomInfo || null}
+        buttons={buttons || null}
+      />
+    )}
     {children}
   </View>
 );

@@ -2,8 +2,10 @@ import React from 'react';
 import ScreenContainer from '../components/ScreenContainer/ScreenContainer';
 import RoomsList from '../components/RoomsList/RoomsList';
 import useSelf from '../hooks/useSelf';
+import { signOut } from '../helpers/util';
+import { Button } from 'react-native';
 
-const Rooms = () => {
+const Rooms = ({ setIsLogged }) => {
   const { rooms } = useSelf();
 
   return (
@@ -15,6 +17,13 @@ const Rooms = () => {
       ]}
     >
       <RoomsList rooms={rooms} />
+      <Button
+        title="Logout"
+        onPress={() => {
+          setIsLogged(false);
+          signOut();
+        }}
+      />
     </ScreenContainer>
   );
 };
