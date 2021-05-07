@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import Profile from '../../assets/images/profile.svg';
-import Search from '../../assets/images/search.svg';
-import Rooms from '../../assets/images/rooms.svg';
-import Phone from '../../assets/images/phone.svg';
-import VideoCall from '../../assets/images/videocall.svg';
-import variables from '../../assets/variables';
+import Profile from '../../../assets/images/profile.svg';
+import Search from '../../../assets/images/search.svg';
+import Rooms from '../../../assets/images/rooms.svg';
+import Phone from '../../../assets/images/phone.svg';
+import VideoCall from '../../../assets/images/videocall.svg';
+import variables from '../../../assets/variables';
 
 const CircleButton = ({ iconName = '', handlePress = () => {}, ...rest }) => {
   const props = {
