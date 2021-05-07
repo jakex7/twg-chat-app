@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Profile from '../../assets/images/profile.svg';
 import { timeFromNow } from '../../helpers/date';
-import CircleButton from '../CircleButton/CircleButton';
+import CircleButton from '../atoms/CircleButton/CircleButton';
 import variables from '../../assets/variables';
 
 const Header = ({ title = '', roomInfo, buttons }) => (
