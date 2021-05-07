@@ -20,6 +20,7 @@ export const stringToDate = (str) => {
   dt.setHours(parseInt(parts[0], 10));
   dt.setMinutes(parseInt(parts[1], 10));
   dt.setSeconds(parseInt(parts[2], 10));
+  dt.setMilliseconds(0);
   return dt;
 };
 export const timeFromNow = (dateTimeString) =>
