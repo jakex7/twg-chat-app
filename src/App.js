@@ -9,6 +9,7 @@ import Rooms from './views/Rooms';
 import Room from './views/Room';
 import SignIn from './views/SignIn';
 import { getToken } from './helpers/util';
+import SignUp from './views/SignUp';
 
 const Stack = createStackNavigator();
 
@@ -49,10 +50,10 @@ const App = () => {
                 name="SignIn"
                 children={() => <SignIn setIsLogged={setIsLogged} />}
               />
-              {/*<Stack.Screen*/}
-              {/*  name="SignUp"*/}
-              {/*  children={() => <SignUp setIsLogged={setIsLogged} />}*/}
-              {/*/>*/}
+              <Stack.Screen
+                name="SignUp"
+                children={() => <SignUp setIsLogged={setIsLogged} />}
+              />
             </>
           )}
         </Stack.Navigator>

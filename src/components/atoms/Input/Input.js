@@ -6,6 +6,7 @@ const Input = ({
   value = '',
   handleChange = () => {},
   isPassword = false,
+  isEmail = false,
   ...rest
 }) => {
   return (
@@ -15,6 +16,7 @@ const Input = ({
         onChangeText={handleChange}
         secureTextEntry={isPassword}
         style={styles.input}
+        keyboardType={isEmail ? 'email-address' : 'default'}
       />
     </View>
   );
