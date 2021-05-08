@@ -92,3 +92,24 @@ export const LOGIN_MUTATION = gql`
     }
   }
 `;
+
+export const REGISTER_MUTATION = gql`
+  mutation Register(
+    $email: String!
+    $firstName: String!
+    $lastName: String!
+    $password: String!
+    $passwordConfirmation: String!
+  ) {
+    registerUser(
+      email: $email
+      firstName: $firstName
+      lastName: $lastName
+      password: $password
+      passwordConfirmation: $passwordConfirmation
+    ) {
+      id
+      email
+    }
+  }
+`;
