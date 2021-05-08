@@ -3,7 +3,7 @@ import ScreenContainer from '../components/ScreenContainer/ScreenContainer';
 import RoomsList from '../components/RoomsList/RoomsList';
 import useSelf from '../hooks/useSelf';
 import { signOut } from '../helpers/util';
-import { Button } from 'react-native';
+import Button from '../components/atoms/Button/Button';
 
 const Rooms = ({ setIsLogged }) => {
   const { rooms } = useSelf();
@@ -18,11 +18,13 @@ const Rooms = ({ setIsLogged }) => {
     >
       <RoomsList rooms={rooms} />
       <Button
-        title="Logout"
-        onPress={() => {
+        text="Logout"
+        isSmall
+        handlePress={() => {
           setIsLogged(false);
           signOut();
         }}
+        style={{ margin: 16 }}
       />
     </ScreenContainer>
   );
