@@ -45,6 +45,7 @@ const SignIn = ({ setIsLogged }) => {
             placeholder="e-mail address"
             value={userData.email}
             handleChange={(text) => handleInputChange('email', text)}
+            isEmail
           />
           <InputField
             placeholder="password"
